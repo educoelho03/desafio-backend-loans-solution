@@ -1,18 +1,20 @@
 package tech.ecoelho.backend.domain.entity;
 
+import tech.ecoelho.backend.exception.LoanNotAvailableException;
+
 public class Loan {
 
-    private Customer customer;
+    private final Customer customer;
 
     public Loan(Customer customer) {
         this.customer = customer;
     }
 
-    private boolean isPersonalLoanAvailable(){
+    public boolean isPersonalLoanAvailable(){
         return basicLoanAvailable();
     }
 
-    private boolean guaranteedLoanAvailable(){
+    public boolean isGuaranteedLoanAvailable(){
         if (customer.incomeIsBiggerOrEqualThan(3000)){
             return true;
         }
@@ -22,9 +24,30 @@ public class Loan {
                 && customer.isLocationFrom("SP");
     }
 
-    private boolean consignedLoanAvailable(){
+    public boolean isConsignedLoanAvailable(){
         customer.incomeIsBiggerOrEqualThan(5000);
         return true;
+    }
+
+    public double getPersonalLoanInterestRate() {
+        if (isPersonalLoanAvailable()){
+            return 4.0;
+        }
+        throw new LoanNotAvailableException();
+    }
+
+    public double getGuaranteedLoanInterestRate() {
+        if (isGuaranteedLoanAvailable()){
+            return 3.0;
+        }
+        throw new LoanNotAvailableException();
+    }
+
+    public double getConsigmentLoanInterestRate() {
+        if (isConsignedLoanAvailable()){
+            return 2.0;
+        }
+        throw new LoanNotAvailableException();
     }
 
     private boolean basicLoanAvailable() {
